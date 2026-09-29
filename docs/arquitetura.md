@@ -43,4 +43,4 @@ Não há aplicação nem fluxo de execução. A entrega planejada é três artef
 2. o exemplo de log;
 3. a resposta esperada da IA.
 
-Esses arquivos estão em [`../challenges/02-prompt-logs`](../challenges/02-prompt-logs/README.md). O texto do prompt e a resposta esperada ainda não foram escritos.
+O prompt colável, o exemplo de log e a resposta esperada já estão em [`../challenges/02-prompt-logs`](../challenges/02-prompt-logs/README.md).

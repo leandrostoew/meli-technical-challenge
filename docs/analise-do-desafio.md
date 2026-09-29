@@ -68,4 +68,4 @@ Estes pontos não são requisito do Mercado Livre. As escolhas do Challenge 01 j
 - captura: Scapy `sniff`, implementado;
 - módulos: separados em captura, parser, ingestão, repositório, analyzer, CLI e relatório.
 
-A imagem Docker do Challenge 01 está implementada. O exemplo de log do Challenge 02 pode ser o do PDF ou uma expansão; o texto do prompt ainda não foi escrito.
+A imagem Docker do Challenge 01 está implementada. O Challenge 02 já tem o prompt colável, o exemplo de log e a resposta esperada em [`../challenges/02-prompt-logs/`](../challenges/02-prompt-logs/README.md).

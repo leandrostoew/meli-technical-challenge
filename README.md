@@ -4,7 +4,7 @@ Solução em preparação para o processo seletivo do Mercado Livre.
 
 O enunciado está em [`docs/desafio-mercado-livre.pdf`](docs/desafio-mercado-livre.pdf). Esse PDF é a fonte dos requisitos. O que não estiver nele aparece neste repositório como decisão nossa.
 
-O prazo escrito no PDF é de 2 dias para os dois challenges. O Challenge 01 captura com Scapy, grava em SQLite, calcula as estatísticas, exibe o relatório pela CLI e roda em Docker. O Challenge 02 segue sem o prompt escrito.
+O prazo escrito no PDF é de 2 dias para os dois challenges. O Challenge 01 captura com Scapy, grava em SQLite, calcula as estatísticas, exibe o relatório pela CLI e roda em Docker. O Challenge 02 já tem o prompt colável, o exemplo de log e a resposta esperada em [`challenges/02-prompt-logs/`](challenges/02-prompt-logs/README.md).
 
 ## Challenges
 
