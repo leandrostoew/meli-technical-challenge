@@ -1,134 +1,117 @@
 # Challenge 01 — Análise de tráfego
 
-A aplicação captura pacotes IPv4, grava em SQLite e exibe o relatório no terminal. O mesmo comando roda no host e em Docker. Este README separa requisito do PDF, decisão nossa e o que já está implementado.
+Aplicação de linha de comando que captura pacotes IPv4 de uma interface, grava os metadados em SQLite e imprime as estatísticas no terminal. O mesmo comando roda no host e no container.
 
-Fonte: [`../../docs/desafio-mercado-livre.pdf`](../../docs/desafio-mercado-livre.pdf).
+Fonte: [`../../docs/desafio-mercado-livre.pdf`](../../docs/desafio-mercado-livre.pdf). As escolhas que o PDF não fixa estão em [`../../docs/decisoes/README.md`](../../docs/decisoes/README.md).
 
 ## Objetivo
 
-**Requisito do PDF.** Desenvolver uma aplicação que capture pacotes de uma interface de rede especificada, armazene esses pacotes e exiba estatísticas básicas do tráfego.
+**Requisito do PDF.** Capturar pacotes de uma interface especificada, guardar IP de origem, IP de destino, protocolo e tamanho, persistir em banco e exibir o total, a quantidade por protocolo e o top 5 de origem e de destino.
 
-## Requisitos
-
-**Requisito do PDF.**
-
-Captura:
-
-- capturar pacotes de uma interface de rede especificada;
-- usar uma biblioteca ou ferramenta adequada (o PDF cita Scapy em Python como exemplo);
-- guardar de cada pacote o IP de origem, o IP de destino, o protocolo e o tamanho.
-
-Estatísticas:
-
-- número total de pacotes capturados;
-- número de pacotes por protocolo (o PDF cita TCP e UDP como exemplo);
-- top 5 IPs de origem com mais tráfego;
-- top 5 IPs de destino com mais tráfego.
-
-Armazenamento:
-
-- persistir os pacotes capturados em um banco de dados.
-
-Execução:
-
-- o script deverá ser executado em Docker.
-
-Entrega e avaliação:
-
-- a aplicação captura pacotes e exibe as estatísticas;
-- a documentação explica como configurar, executar e usar;
-- as escolhas ficam justificadas (o PDF cita schema da base e informações do script como exemplos);
-- a entrega é o código junto com a documentação.
-
-## Tecnologias previstas
-
-| Item | Origem | Estado |
-| --- | --- | --- |
-| Linguagem de preferência, preferencialmente Python | requisito do PDF, com preferência explícita | Python 3.12, implementado |
-| Biblioteca de captura; Scapy citado como exemplo | requisito do PDF cita o exemplo | Scapy 2.7.0, `sniff` implementado |
-| Docker | requisito do PDF | imagem funcional, rede do host e capabilities |
-| Banco de dados | requisito do PDF, produto não nomeado | SQLite implementado |
-| Testes automatizados | decisão nossa | pytest, sem interface real |
-| GitHub | decisão nossa | repositório local, sem pipeline |
+A linguagem é Python. O script também roda em Docker.
 
 ## Arquitetura
 
-O fluxo implementado está em [`../../docs/arquitetura.md`](../../docs/arquitetura.md):
-
 ```text
-Interface de rede
-→ captura de pacotes
-→ extração dos campos
-→ persistência
-→ análise estatística
-→ apresentação dos resultados
+interface informada na CLI
+→ Scapy sniff (promisc=False)
+→ ingest
+   → IPv4 gravado em SQLite
+   → quadro sem IPv4 só incrementa ignored_non_ip
+→ analyzer
+→ relatório no terminal
 ```
 
-Os módulos estão em `src/traffic_analyzer/`. Captura, parser, ingestão, SQLite, analyzer, CLI, relatório e Docker estão implementados.
+O código está em `src/traffic_analyzer/`. O fluxo completo está em [`../../docs/arquitetura.md`](../../docs/arquitetura.md).
 
-## Captura
+## Pré-requisitos
 
-**Requisito do PDF:** ler pacotes de uma interface especificada e extrair IP de origem, IP de destino, protocolo e tamanho.
+- Python 3.12
+- Docker e Docker Compose, para a execução em container
+- Permissão de socket bruto na captura. A aplicação não eleva privilégio e não chama `sudo`
 
-**Decisão nossa, implementada:** `sniff` lê a interface informada na CLI, com `promisc=False`. O parser guarda só IPv4. ARP e IPv6 incrementam `ignored_non_ip`. Não há nome de interface fixo no código.
+Na validação manual em Linux, essa permissão foi concedida ao processo por fora da aplicação. Sem ela, a CLI termina com código 3.
 
-## Armazenamento
+## Instalação
 
-**Requisito do PDF:** os pacotes capturados vão para um banco de dados.
-
-**Decisão nossa:** SQLite, só metadados, tabelas `captures` e `packets`, com os índices da especificação aprovada. O schema está em `src/traffic_analyzer/persistence/repository.py`.
-
-## Estatísticas
-
-**Requisito do PDF:** total de pacotes, quantidade por protocolo, top 5 de origem e top 5 de destino.
-
-**Decisão nossa, implementada:** tráfego é a soma de `size_bytes`. O analyzer calcula as quatro estatísticas e o relatório as exibe. `size_bytes` é o comprimento da camada IPv4 lida.
-
-## Execução em Docker
-
-**Requisito do PDF:** o script roda em Docker.
-
-**Decisão nossa, implementada:** a imagem `python:3.12` instala Scapy 2.7.0 e usa a CLI como entrypoint (`python -m traffic_analyzer`). O compose liga a rede do host, acrescenta `CAP_NET_RAW` e `CAP_NET_ADMIN`, deixa `privileged: false` e monta `./data` em `/app/data`. Não há `sudo` na imagem. A interface não está fixada no compose: entra em `--interface`. `promisc=False` continua no sniffer.
-
-`requirements.txt` declara Scapy 2.7.0 e pytest 9.1.1. A imagem instala só o Scapy. O pytest fica no ambiente de testes do host.
-
-## Testes
-
-**Decisão nossa.** O PDF não pede testes. A suíte cobre parser, repositório, ingestão, analyzer, sniffer simulado, CLI, relatório e o texto do Dockerfile e do compose. Nenhum teste automático abre interface de rede nem constrói a imagem. A captura real continua em `tests/manual_capture_wlp3s0.py`, fora do pytest.
-
-## Documentação
-
-**Requisito do PDF:** explicar como configurar, executar e usar, e justificar as decisões.
-
-A documentação desta etapa é este README, a [análise](../../docs/analise-do-desafio.md), a [arquitetura](../../docs/arquitetura.md) e as [decisões](../../docs/decisoes/README.md). O schema já está no repositório SQLite.
-
-## Como executar
-
-O diretório do arquivo SQLite precisa existir. A aplicação não cria essa pasta e não chama `sudo`.
-
-No host, a captura precisa de permissão de socket bruto. Na validação em Linux Mint isso foi feito elevando o processo por fora da aplicação. Sem essa permissão, a CLI termina com mensagem clara e código 3.
+A partir da raiz do repositório:
 
 ```bash
 cd challenges/01-analise-de-trafego
-sudo .venv/bin/python traffic-analyzer capture --interface wlp3s0 --count 10 --db /tmp/meli-cli.db
-.venv/bin/python traffic-analyzer report --db /tmp/meli-cli.db
+python3.12 -m venv .venv
+.venv/bin/pip install -r requirements.txt
 ```
 
-`--count` é o máximo de pacotes IPv4 armazenados. `--duration` é a duração em segundos. Os dois juntos são recusados. Sem nenhum dos dois, a captura segue até Ctrl+C. Ctrl+C grava `ended_at`, conserva os pacotes já gravados e mostra o relatório parcial.
+`requirements.txt` fixa Scapy 2.7.0 e pytest 9.1.1. A imagem Docker instala só o Scapy. O pytest fica no ambiente do host. O diretório `.venv` não entra no Git.
 
-O padrão de `--db` é `data/traffic.db`.
+## Testes
 
-### Docker
+**Decisão nossa.** O PDF não pede testes.
 
-O diretório `data/` já existe no repositório. O banco padrão fica em `data/traffic.db` no host, que o container vê como `/app/data/traffic.db`.
+```bash
+cd challenges/01-analise-de-trafego
+.venv/bin/python -m pytest
+```
+
+A suíte cobre parser, repositório, ingestão, analyzer, sniffer simulado, CLI, relatório e o texto do Dockerfile e do compose. Nenhum teste abre interface de rede nem constrói a imagem.
+
+## CLI
+
+O lançador é `traffic-analyzer`. A interface é sempre o argumento `--interface`. Troque `NOME` pelo nome da interface dessa máquina. Na validação em Linux Mint o nome usado foi `wlp3s0`. Esse nome não é padrão do programa.
+
+`--count` é o máximo de pacotes IPv4 armazenados. `--duration` é a duração em segundos. Os dois juntos são recusados. Sem nenhum dos dois, a captura segue até Ctrl+C.
+
+O padrão de `--db` é `data/traffic.db`. O diretório do arquivo precisa existir. A aplicação não cria essa pasta. `data/` já vem no repositório.
+
+```bash
+cd challenges/01-analise-de-trafego
+.venv/bin/python traffic-analyzer capture --interface NOME --count 10
+.venv/bin/python traffic-analyzer capture --interface NOME --duration 10
+.venv/bin/python traffic-analyzer capture --interface NOME
+.venv/bin/python traffic-analyzer report
+```
+
+`report` reexibe a sessão mais recente do banco. `--capture-id` escolhe outra sessão. `--db` aponta outro arquivo, no `capture` e no `report`.
+
+Ctrl+C encerra a leitura, grava `ended_at`, conserva os pacotes já armazenados e mostra o relatório do que foi gravado. O código de saída é 0.
+
+### Códigos de saída
+
+| Código | Situação |
+| --- | --- |
+| 0 | Captura concluída, ou interrompida com Ctrl+C, com relatório |
+| 1 | Falha inesperada de captura |
+| 2 | Argumento inválido ou interface inexistente |
+| 3 | Sem permissão para capturar |
+| 4 | Erro de persistência |
+
+No código 3 a mensagem diz que a captura requer permissão adequada e que a aplicação não eleva privilégio.
+
+## Docker
+
+**Requisito do PDF:** o script roda em Docker.
+
+**Decisão nossa:** a imagem usa a CLI como entrypoint. O compose usa a rede do host, acrescenta `CAP_NET_RAW` e `CAP_NET_ADMIN`, deixa `privileged: false` e monta `./data` em `/app/data`. Não há `sudo` na imagem. A interface continua só em `--interface`. `promisc=False` permanece no sniffer.
 
 ```bash
 cd challenges/01-analise-de-trafego
 docker compose build
-docker compose run --rm traffic-analyzer capture --interface wlp3s0 --count 10
+docker compose run --rm traffic-analyzer capture --interface NOME --count 10
+docker compose run --rm traffic-analyzer capture --interface NOME --duration 10
 docker compose run --rm traffic-analyzer report
 ```
 
-`--count` e `--duration` funcionam como na CLI do host. Sem os dois, a captura segue até Ctrl+C. Troque `wlp3s0` pelo nome da interface dessa máquina.
+O banco padrão no host é `challenges/01-analise-de-trafego/data/traffic.db`. Dentro do container o mesmo arquivo é `/app/data/traffic.db`.
 
-A configuração validada usa `CAP_NET_RAW` e `CAP_NET_ADMIN`. Sem essas duas capabilities, a mesma CLI termina com código 3 e avisa que a captura requer permissão adequada. O container não chama `sudo`.
+A configuração validada usa as duas capabilities. Sem `CAP_NET_RAW` e `CAP_NET_ADMIN`, a CLI termina com código 3. O processo do container é o root da imagem, porque essas capabilities valem para ele. O arquivo SQLite criado por esse processo fica com o dono desse usuário.
+
+## Decisões
+
+Estas escolhas não estão escritas no PDF. O relatório deixa a primeira explícita.
+
+- Só IPv4 entra nas estatísticas e na tabela `packets`. ARP e IPv6 incrementam `ignored_non_ip`. O total exibido é o de pacotes IPv4 armazenados.
+- `size_bytes` é o comprimento da camada IPv4 lida.
+- Tráfego, no top 5, é a soma de `size_bytes`. Origem agrupa `src_ip`. Destino agrupa `dst_ip`.
+- `promisc=False`. A captura não pede o modo promíscuo.
+
+O schema, com as tabelas `captures` e `packets`, está em `src/traffic_analyzer/persistence/repository.py`.

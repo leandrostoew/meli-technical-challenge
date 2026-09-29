@@ -37,10 +37,10 @@ Relatório no terminal
 
 ## Challenge 02
 
-Não há aplicação nem fluxo de execução. A entrega planejada é três artefatos:
+Não há aplicação nem fluxo de execução. A entrega são três arquivos:
 
-1. o prompt;
-2. o exemplo de log;
+1. o prompt colável;
+2. o exemplo de log transcrito do PDF;
 3. a resposta esperada da IA.
 
-O prompt colável, o exemplo de log e a resposta esperada já estão em [`../challenges/02-prompt-logs`](../challenges/02-prompt-logs/README.md).
+Eles estão em [`../challenges/02-prompt-logs`](../challenges/02-prompt-logs/README.md). O prompt não depende desse exemplo.

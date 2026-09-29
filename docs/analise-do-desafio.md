@@ -55,7 +55,7 @@ O contexto do PDF é uma equipe de infraestrutura que analisa grandes volumes de
 2. Um exemplo de trecho de log. Pode ser o fornecido no PDF ou um expandido.
 3. Uma resposta esperada da IA, com a interpretação das mensagens relevantes.
 
-O PDF inclui um log de exemplo, de 16 de maio, entre 14:01:22 e 14:01:35. A transcrição está em [`../challenges/02-prompt-logs/exemplo-de-log.txt`](../challenges/02-prompt-logs/exemplo-de-log.txt). A palavra "Unset" no PDF é rótulo de bloco do editor, não uma linha do log.
+O PDF inclui um log de exemplo, de 16 de maio, entre 14:01:22 e 14:01:35, e permite usar esse trecho ou expandi-lo. A entrega usa a transcrição, sem linhas novas, em [`../challenges/02-prompt-logs/exemplo-de-log.txt`](../challenges/02-prompt-logs/exemplo-de-log.txt). A palavra "Unset" no PDF é rótulo de bloco do editor, não uma linha do log.
 
 ## O que o PDF não define
 

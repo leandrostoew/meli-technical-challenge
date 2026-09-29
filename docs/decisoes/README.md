@@ -1,6 +1,6 @@
 # Decisões técnicas
 
-**REQUISITO DO PDF** é o que o enunciado pede. **DECISÃO NOSSA** é escolha do projeto. O registro abaixo descreve o que já foi aprovado. Onde a implementação ainda não existe, o status diz isso.
+**REQUISITO DO PDF** é o que o enunciado pede. **DECISÃO NOSSA** é escolha do projeto. O registro abaixo descreve o que já foi aprovado. O status de cada item diz se aquela escolha está implementada.
 
 | ID | Tema | Status |
 | --- | --- | --- |
