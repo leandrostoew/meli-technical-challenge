@@ -1,0 +1,13 @@
+services:
+  traffic-analyzer:
+    build: .
+    image: meli-traffic-analyzer
+    network_mode: host
+    privileged: false
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    init: true
+    volumes:
+      - ./data:/app/data
+    working_dir: /app

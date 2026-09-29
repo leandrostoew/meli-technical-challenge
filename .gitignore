@@ -1,0 +1,37 @@
+# ambiente
+.env
+.env.*
+!.env.example
+.venv/
+
+# sistema
+.DS_Store
+
+# editores
+.idea/
+.vscode/
+
+# testes
+.pytest_cache/
+
+# cobertura
+coverage/
+.coverage
+htmlcov/
+*.lcov
+
+# artefatos locais
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# artefatos comuns
+node_modules/
+dist/
+build/
+target/
+__pycache__/
+*.pyc
+vendor/
+bin/
