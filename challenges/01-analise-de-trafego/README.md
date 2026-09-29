@@ -131,4 +131,4 @@ docker compose run --rm traffic-analyzer report
 
 `--count` e `--duration` funcionam como na CLI do host. Sem os dois, a captura segue até Ctrl+C. Troque `wlp3s0` pelo nome da interface dessa máquina.
 
-Sem `CAP_NET_RAW`, a mesma CLI termina com código 3 e avisa que a captura requer permissão adequada. O container não chama `sudo`.
+A configuração validada usa `CAP_NET_RAW` e `CAP_NET_ADMIN`. Sem essas duas capabilities, a mesma CLI termina com código 3 e avisa que a captura requer permissão adequada. O container não chama `sudo`.

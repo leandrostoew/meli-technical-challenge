@@ -1,4 +1,4 @@
-"""Erros previstos da fundação. Falhas de banco e de argumento não seguem silenciosas."""
+"""Erros da aplicação, em especial captura, interface e permissão."""
 
 
 class TrafficAnalyzerError(Exception):

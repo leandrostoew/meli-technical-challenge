@@ -13,6 +13,7 @@
 
 # testes
 .pytest_cache/
+challenges/01-analise-de-trafego/tests/manual_capture_wlp3s0.py
 
 # cobertura
 coverage/
